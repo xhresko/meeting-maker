@@ -50,12 +50,12 @@ persons_count([_|Rest],Count) :-
     persons_count(Rest,PartResult),
     Count is PartResult+1.
 
-:- Times = [A,B,C], Times ins 1..2,
-   Rooms = [X,Y,Z], Rooms ins 1..2,
-   meeting([1,2], A, X), meeting([1,3,4], B, Y), meeting([3,2], C, Z),
-   A #= B #==> X #\= Y, A #= C #==> X #\= Z, C #= B #==> Z #\= Y,
-   labeling([down], Rooms), labeling([down], Times),
-   write('Times'),write(Times),write(' Rooms'),write(Rooms).
+:- Times = [A1,B,C], Times ins 1..2,
+   Places = [X,Y,Z], Places ins 1..2,
+   meeting([1,2], A1, X), meeting([1,3,4], B, Y), meeting([3,2], C, Z),
+   (A1 #= B) #==> X #\= Y, A1 #= C #==> X #\= Z, C #= B #==> Z #\= Y,
+   labeling([down], Places), labeling([down], Times),
+   write('Times'),write(Times),write(' Rooms'),write(Places).
 
 
 
