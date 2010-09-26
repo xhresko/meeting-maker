@@ -23,11 +23,15 @@ request([3,2]).
 % meeting(PartnerIds , Time, Room)
 %meeting([1,2,3],2).
 %meeting(X,Time) :-
-meeting(Partners,Time,Room) :-
+%meeting(Partners,Time,Room) :-
+%    request(Partners),
+%    room(Room,RoomSize),
+%    persons_count(Partners,RoomSize).
+meeting(Partners,_,Room) :-
     request(Partners),
-    room(Room,X),
-    persons_count(Partners,X).
-
+    room(Room,RoomSize),
+    persons_count(Partners,Count),
+    RoomSize >= Count.
 
 
 partners([]).
@@ -37,12 +41,21 @@ partners([P|Rest]) :-
     partners(Rest).
 
 not_member(_,[]).
-not_member(Z,[X|Tail]) :-
-    Z \= X,
-    not_member(Z,Tail).
+not_member(Tested,[First|Tail]) :-
+    Tested \= First,
+    not_member(Tested,Tail).
 
 persons_count([],0).
 persons_count([_|Rest],Count) :-
-    persons_count(Rest,Y),
-    Count is Y+1.
+    persons_count(Rest,PartResult),
+    Count is PartResult+1.
+
+:- Times = [A,B,C], Times ins 1..2,
+   Rooms = [X,Y,Z], Rooms ins 1..2,
+   meeting([1,2], A, X), meeting([1,3,4], B, Y), meeting([3,2], C, Z),
+   A #= B #==> X #\= Y, A #= C #==> X #\= Z, C #= B #==> Z #\= Y,
+   labeling([down], Rooms), labeling([down], Times),
+   write('Times'),write(Times),write(' Rooms'),write(Rooms).
+
+
 
