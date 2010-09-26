@@ -7,13 +7,13 @@ import itertools
 partners = [("Partner1",1,2),("Partner2",2,3),("Partner3",3,2),("Partner4",4,1),("Partner5",5,2),("Partner6",6,1),("Partner7",7,2)]
 
 # available rooms for meeting - array of rooms - [RoomName, RoomID, Capacity], capacity define max num. of agents for one meeting
-rooms = [['Room1',0,2],['Room2',1,4],['Room3',2,2]]
+rooms = [['Room1',1,2],['Room2',2,4],['Room3',3,2],['Room4',4,2]]
 
 # requests for meetings - in  format of arrays of partner ids, meeting id
-req_meetings = [([0,1],1),([1,2,3],2),([0,6],3),([3,4,5,6],4),([2,4],5),([3,5],6),([0,1,5,6],7),([4,5],8), ([0,4],9), ([1,2,3,4],10)]
-
+#req_meetings = [([1,2],1),([2,3,4],2),([1,5],3),([4,5,6,7],4),([3,5],5),([4,6],6),([1,2,6,7],7),([5,6],8), ([1,5],9), ([2,3,4,5],10), ([2,5],11), ([2,4], 12), ([2,7], 13), ([2,8], 14) ]
+req_meetings = [([1,2],1),([2,3,4],2),([1,5],3),([4,5,6,7],4),([3,5],5),([4,6],6),([1,2,6,7],7),([5,6],8), ([1,5],9), ([2,3,4,5],10), ([2,5],11) ]
 # time blocks in which meeting can be arrange
-time_blocks = 4
+time_blocks = 6
 
 
 # Generator of Prolog code
@@ -72,7 +72,7 @@ for p in perms :
 
 
 for partner in partners :
-    pid = partner[1] - 1
+    pid = partner[1]
     agents = partner[2]
     p_meetings = list()
     #print(partner[0] + " : ")
@@ -93,21 +93,28 @@ for partner in partners :
                 rest.remove(item)
             constraint = ""
             if(len(comb)>1) :
+                constraint += "("
                 for item in comb :
-                    constraint += "Time" + str(item)
+                    #constraint += "Time" + str(item)
+                    #if(comb.index(item)+1 < len(comb)) :
+                    #    constraint += " #= "
+                    #else :
+                    #    constraint += ") #==> "
+                    constraint += "(Time" + str(comb[0]) + " #= Time"+ str(item) + ") "
                     if(comb.index(item)+1 < len(comb)) :
-                        constraint += " #= "
+                        constraint +="#/\\ "
                     else :
-                        constraint += " #==> "
+                        constraint += ") #==> "
             for item in rest :
                 constraint += "( Time" + str(comb[0]) + " #\\= Time" + str(item) + ") "
                 if(rest.index(item)+1 < len(rest)) :
                     constraint +="#/\\ "
 
-            constraint += ","
+            constraint += ",\n"
+            code += constraint
             #print(constraint)
     #print("\n")
-code += constraint
+
 # END OF CONSTRAINTS
 
 code+="labeling([down], Places), labeling([down], Times),\n"
